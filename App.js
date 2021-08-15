@@ -106,6 +106,8 @@ function endQuiz() {
 }
 
 function calculatePoints() {
+  if (choices.length === 0) return 0;
+
   return choices
     .map((c) => (c.isCorrect ? 1 : 0))
     .reduce((point, num) => point + num);
