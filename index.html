@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سوالات</title>
-    <link rel="stylesheet" href="Bootstrap/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="rtl_bootstrap/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="style.css">
 
 </head>
@@ -16,7 +16,6 @@
         <div class="card mt-5">
             <div class=" card-header d-flex justify-content-between">
                 <h4>سوال # <span id="number"></span> </h4>
-                <button type="button" id="endQuiz" onclick="endQuiz()" class="btn btn-primary"> پایان آزمون </button>
             </div>
             <div class="card-body" id="card-body">
                 <p class="card-text" id="description"></p>
@@ -30,11 +29,12 @@
                 ❮ سوال قبل</button>
             <button type="button" id="nextQuestion" onclick="goToNextQuestion()" class="btn btn-primary">سوال بعد ❯
             </button>
+            <button type="button" id="endQuiz" onclick="endQuiz()" class="btn btn-primary"> پایان آزمون </button>
         </div>
     </div>
 </body>
 
-<script src="SweetAlert/sweetalert2@11.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="Db.js"></script>
 <script src="App.js"></script>
 

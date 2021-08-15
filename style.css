@@ -1,3 +1,10 @@
 body {
-    background-color: #eee;
+  background-color: #eee;
+}
+
+#endQuiz {
+  display: none;
+}
+#nextQuestion {
+  display: block;
 }
