@@ -5,19 +5,13 @@ const cardBody = document.getElementById("card-body");
 const previousQuestionBtn = document.getElementById("previousQuestion");
 const nextQuestionBtn = document.getElementById("nextQuestion");
 const endQuizBtn = document.getElementById("endQuiz");
+const choicesElement = document.getElementById("choices");
 
-//common variabels-------
+//common variabel-------
 let currentQuestionNumber = 1;
-let choices = [];
-
-//initial Question from Db.js file . You can initial this case with real db.
-let questions = dbQuestions;
+let questions = Array.from(dbQuestions); //Initial questions from Db.js file . You can initial this case with real db.
 
 //functions-------
-function getPreviousChoice(questionId) {
-  return choices.find((c) => c.questionId == questionId);
-}
-
 function createChoiceElements(question) {
   let choicesHtml = "";
   //create choice input element for current question
@@ -29,43 +23,29 @@ function createChoiceElements(question) {
              type="radio"
              onclick="saveChoice(${ch.questionId}, ${ch.slot})"
              name="ChoiceRadio" 
+             ${question.lastChoice === ch.slot && "checked"}
              id = "slot${ch.slot}">
-             <label class="form-check-label mr-4" for="ChoiceRadio"> ${ch.text} </label></div>`;
+             <label class="form-check-label mr-4" for="ChoiceRadio"> ${
+               ch.text
+             } </label></div>`;
   });
 
   return choicesHtml;
 }
 
-function setQuestion(number) {
+function setQuestion() {
   //get current question from Questions list
-  let currentQuestion = questions[number - 1];
-
+  let currentQuestion = questions[currentQuestionNumber - 1];
   //set question number and question description
-  questionNumber.innerText = number;
+  questionNumber.innerText = currentQuestionNumber;
   questionDescription.innerText = currentQuestion.description;
-
   // set questuion choices
-  document.getElementById("choices").innerHTML =
-    createChoiceElements(currentQuestion);
-
-  //checked a choice if that selected later
-  if (getPreviousChoice(currentQuestion.id)) {
-    let previousCheckedSlot = getPreviousChoice(currentQuestion.id).slot;
-    document.getElementById("slot" + previousCheckedSlot).checked = true;
-  }
+  choicesElement.innerHTML = createChoiceElements(currentQuestion);
 }
 
 function saveChoice(questionId, slot) {
-  let question = questions.find((q) => q.id == questionId);
-  let choice = question.choices.find((ch) => ch.slot == slot);
-
-  let indexOfChoice = choices.findIndex((c) => c.questionId == questionId);
-
-  if (indexOfChoice != -1) {
-    choices[indexOfChoice] = choice;
-  } else {
-    choices.push(choice);
-  }
+  let question = questions.find((q) => +q.id === +questionId);
+  question.lastChoice = +slot;
 }
 
 function renderBtns() {
@@ -80,7 +60,7 @@ function goToNextQuestion() {
   if (currentQuestionNumber < questions.length) {
     currentQuestionNumber++;
     renderBtns();
-    setQuestion(currentQuestionNumber);
+    setQuestion();
   }
 }
 
@@ -88,7 +68,7 @@ function goToPreviousQuestion() {
   if (currentQuestionNumber > 1) {
     currentQuestionNumber--;
     renderBtns();
-    setQuestion(currentQuestionNumber);
+    setQuestion();
   }
 }
 
@@ -106,11 +86,12 @@ function endQuiz() {
 }
 
 function calculatePoints() {
-  if (choices.length === 0) return 0;
-
-  return choices
-    .map((c) => (c.isCorrect ? 1 : 0))
-    .reduce((point, num) => point + num);
+  let total = 0;
+  questions.forEach((q) => {
+    let trueChoiceSlot = q.choices.find((ch) => ch.isCorrect).slot;
+    if (q.lastChoice === trueChoiceSlot) total++;
+  });
+  return total;
 }
 
 function OnEndQuiz() {
@@ -118,9 +99,10 @@ function OnEndQuiz() {
     title: `امتیاز شما : ${calculatePoints()}`,
     confirmButtonText: `Ok`,
   }).then((result) => {
-    choices = [];
+    questions.forEach((q) => (q.lastChoice = 0));
+    setQuestion();
   });
 }
 
 //do something where page load
-setQuestion(currentQuestionNumber);
+setQuestion();
